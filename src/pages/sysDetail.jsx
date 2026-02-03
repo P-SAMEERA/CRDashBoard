@@ -100,28 +100,37 @@ const SystemDetail = () => {
       ? { crId: form.crId, updates: form }
       : form;
 
-    await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+   await fetch(url, {
+  method,
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(payload),
+});
 
-    setShowModal(false);
-    loadData();
-  };
+// 🔥 Optimistic UI update
+setCrs((prev) => [...prev, form]);
 
+setShowModal(false);
+
+// Optional safety re-sync
+setTimeout(loadData, 300);
+
+};
   /* ---------------- DELETE ---------------- */
 
   const deleteCR = async (crId) => {
     if (!window.confirm("Delete this CR?")) return;
 
-    await fetch("/api/deleteCrs", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ crId }),
-    });
+    // 🔥 Remove immediately from UI
+setCrs((prev) => prev.filter((cr) => cr.crId !== crId));
 
-    loadData();
+await fetch("/api/deleteCrs", {
+  method: "DELETE",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ crId }),
+});
+
+// Optional safety re-sync
+setTimeout(loadData, 300);
   };
 
   /* ---------------- UI ---------------- */
