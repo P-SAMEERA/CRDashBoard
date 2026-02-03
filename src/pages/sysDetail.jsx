@@ -153,8 +153,9 @@ const SystemDetail = () => {
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold tracking-wide">
-          {system} · Change Requests
-        </h1>
+  {system === "OTHERS" ? "Finance" : system} · Change Requests
+</h1>
+
 
         <div className="flex gap-3">
           <button
