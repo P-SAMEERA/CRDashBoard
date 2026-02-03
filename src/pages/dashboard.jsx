@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import crData from "../assets/data.json";
 
 /* -------------------- FIXED CARD ORDER -------------------- */
 
@@ -35,34 +34,49 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!crData?.systems) return;
+    const loadDashboard = async () => {
+      try {
+        const res = await fetch("/api/getCrs");
+        if (!res.ok) throw new Error("API failed");
 
-    const normalize = (val) =>
-      val?.toString().trim().toUpperCase();
+        const data = await res.json();
 
-    const counts = {};
-    let totalCRs = 0;
+        const normalize = (v) => v?.toString().trim().toUpperCase();
 
-    Object.values(crData.systems).forEach((system) => {
-      system.crs.forEach((cr) => {
-        const app = normalize(cr.application);
-        counts[app] = (counts[app] || 0) + 1;
-        totalCRs += 1;
-      });
-    });
+        const counts = {};
+        let totalCRs = 0;
 
-    const finalCards = CARD_ORDER.map((key) => {
-      if (key === "TOTAL") {
-        return { label: "TOTAL", value: totalCRs, clickable: false };
+        Object.values(data.systems || {}).forEach((system) => {
+          (system.crs || []).forEach((cr) => {
+            let app = normalize(cr.application);
+
+            // ✅ NORMALIZATION RULES (IMPORTANT)
+            if (app === "SC") app = "SC2";
+            if (app === "RSYSTEM") app = "R-SYSTEM";
+
+            counts[app] = (counts[app] || 0) + 1;
+            totalCRs++;
+          });
+        });
+
+        const finalCards = CARD_ORDER.map((key) => {
+          if (key === "TOTAL") {
+            return { label: "TOTAL", value: totalCRs, clickable: false };
+          }
+          return {
+            label: key,
+            value: counts[key] || 0,
+            clickable: true,
+          };
+        });
+
+        setCards(finalCards);
+      } catch (err) {
+        console.error("Dashboard load failed:", err);
       }
-      return {
-        label: key,
-        value: counts[key] || 0,
-        clickable: true,
-      };
-    });
+    };
 
-    setCards(finalCards);
+    loadDashboard();
   }, []);
 
   const handleCardClick = (system) => {
@@ -98,9 +112,7 @@ const Dashboard = () => {
               <p className={`text-4xl font-bold mt-2 ${color.text}`}>
                 {card.value}
               </p>
-              <p className="mt-1 text-xs text-gray-500">
-                Total CRs
-              </p>
+              <p className="mt-1 text-xs text-gray-500">Total CRs</p>
             </div>
           );
         })}

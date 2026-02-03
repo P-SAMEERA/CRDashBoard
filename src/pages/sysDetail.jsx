@@ -86,7 +86,8 @@ const SystemDetail = () => {
     setShowModal(true);
   };
 
-  const saveCR = async () => {
+  const saveCR = async (e) => {
+    e?.preventDefault();
     if (!form.crId || !form.title || !form.owner) {
       alert("CR ID, Title and Owner are mandatory");
       return;
@@ -314,11 +315,12 @@ const SystemDetail = () => {
                 Cancel
               </button>
               <button
-                onClick={saveCR}
-                className="px-4 py-2 text-sm bg-green-600 rounded hover:bg-green-700"
-              >
-                Save
-              </button>
+  type="button"
+  onClick={saveCR}
+  className="px-4 py-2 text-sm bg-green-600 rounded hover:bg-green-700"
+>
+  Save
+</button>
             </div>
           </div>
         </div>
