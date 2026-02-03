@@ -118,6 +118,8 @@ const SystemDetail = () => {
     console.error("Save CR failed:", err);
     alert("Failed to save CR");
   }
+  window.location.reload();
+
 };
   /* ---------------- DELETE ---------------- */
 
@@ -140,6 +142,8 @@ const SystemDetail = () => {
     console.error("Delete CR failed:", err);
     alert("Failed to delete CR");
   }
+  window.location.reload();
+
 };
 
   /* ---------------- UI ---------------- */
