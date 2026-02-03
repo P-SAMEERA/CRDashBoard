@@ -13,6 +13,13 @@ const CARD_ORDER = [
   "OTHERS",
   "TOTAL",
 ];
+const STATUS_ORDER = [
+  "In Progress",
+  "Completed",
+  "Not Started",
+  "Waiting for Go-Live",
+];
+
 
 /* -------------------- COLORS -------------------- */
 
@@ -145,56 +152,64 @@ const Dashboard = () => {
           );
         })}
       </div>
-     {/* Status Overview */}
-<div className="max-w-5xl mx-auto mt-8 bg-[#1F1F1F] rounded-xl shadow-lg overflow-hidden">
-  
+     {/* Status Overview – Transposed */}
+<div className="max-w-6xl mx-auto mt-8 rounded-xl shadow-xl
+                bg-[#1F1F1F] border border-gray-700">
+
   {/* Header */}
   <div className="px-5 py-3 border-b border-gray-700">
-    <h2 className="text-sm font-semibold tracking-wide text-gray-300 uppercase">
-      CR Status Overview (All Systems)
+    <h2 className="text-sm font-semibold tracking-wider text-white uppercase">
+      CR Status Overview · All Systems
     </h2>
   </div>
 
-  {/* Table */}
-  <table className="w-full text-sm table-fixed">
-    <thead className="bg-[#2A2A2A]">
-      <tr className="text-gray-400">
-        <th className="p-3 text-left w-2/3">Status</th>
-        <th className="p-3 text-right w-1/3">Count</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      {Object.entries(statusSummary).map(([status, count]) => (
-        <tr
-          key={status}
-          className="border-t border-gray-700 hover:bg-[#2B2B2B] transition"
-        >
-          <td className="p-3">
-            <span className="inline-flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-blue-400" />
-              {status}
-            </span>
-          </td>
-
-          <td className="p-3 text-right">
-            <span className="inline-block min-w-[40px] text-center px-2 py-1 rounded-md
-                             bg-gray-800 text-gray-200 font-semibold">
-              {count}
-            </span>
-          </td>
-        </tr>
-      ))}
-
-      {Object.keys(statusSummary).length === 0 && (
+  <div className="overflow-x-auto">
+    <table className="w-full text-sm table-fixed text-center">
+      <thead className="bg-[#2A2A2A]">
         <tr>
-          <td colSpan="2" className="p-5 text-center text-gray-500">
-            No status data available
-          </td>
+          <th className="p-4 text-left text-white w-32">Status</th>
+
+          {STATUS_ORDER.map((status) => (
+            <th
+              key={status}
+              className="p-4 text-white font-medium"
+            >
+              {status}
+            </th>
+          ))}
         </tr>
-      )}
-    </tbody>
-  </table>
+      </thead>
+
+      <tbody>
+        <tr className="border-t border-gray-700">
+          <td className="p-4 text-left text-white font-semibold">
+            Count
+          </td>
+
+          {STATUS_ORDER.map((status) => {
+            const count = statusSummary[status] || 0;
+
+            return (
+              <td
+                key={status}
+                className="p-4"
+              >
+                <span
+                  className="inline-block min-w-[56px] px-4 py-2 rounded-lg
+                             text-white text-lg font-bold bg-[#111827]"
+                  style={{
+                    boxShadow: "0 0 14px rgba(59,130,246,0.55)",
+                  }}
+                >
+                  {count}
+                </span>
+              </td>
+            );
+          })}
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 
