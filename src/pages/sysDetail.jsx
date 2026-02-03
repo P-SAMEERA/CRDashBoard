@@ -86,52 +86,61 @@ const SystemDetail = () => {
     setShowModal(true);
   };
 
-  const saveCR = async (e) => {
-    e?.preventDefault();
-    if (!form.crId || !form.title || !form.owner) {
-      alert("CR ID, Title and Owner are mandatory");
-      return;
-    }
+  const saveCR = async () => {
+  if (!form.crId || !form.title || !form.owner) {
+    alert("CR ID, Title and Owner are mandatory");
+    return;
+  }
 
-    const url = editMode ? "/api/updateCrs" : "/api/addCrs";
-    const method = editMode ? "PATCH" : "POST";
+  const url = editMode ? "/api/updateCrs" : "/api/addCrs";
+  const method = editMode ? "PATCH" : "POST";
 
-    const payload = editMode
-      ? { crId: form.crId, updates: form }
-      : form;
+  const payload = editMode
+    ? { crId: form.crId, updates: form }
+    : form;
 
-   await fetch(url, {
-  method,
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(payload),
-});
+  try {
+    // 1️⃣ SAVE FIRST
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-// 🔥 Optimistic UI update
-setCrs((prev) => [...prev, form]);
+    if (!res.ok) throw new Error("Save failed");
 
-setShowModal(false);
+    // 2️⃣ CLOSE MODAL
+    setShowModal(false);
 
-// Optional safety re-sync
-setTimeout(loadData, 300);
-
+    // 3️⃣ NOW FETCH FRESH DATA (AFTER SAVE COMPLETES)
+    await loadData();
+  } catch (err) {
+    console.error("Save CR failed:", err);
+    alert("Failed to save CR");
+  }
 };
   /* ---------------- DELETE ---------------- */
 
   const deleteCR = async (crId) => {
-    if (!window.confirm("Delete this CR?")) return;
+  if (!window.confirm("Delete this CR?")) return;
 
-    // 🔥 Remove immediately from UI
-setCrs((prev) => prev.filter((cr) => cr.crId !== crId));
+  try {
+    // 1️⃣ DELETE FIRST
+    const res = await fetch("/api/deleteCrs", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ crId }),
+    });
 
-await fetch("/api/deleteCrs", {
-  method: "DELETE",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ crId }),
-});
+    if (!res.ok) throw new Error("Delete failed");
 
-// Optional safety re-sync
-setTimeout(loadData, 300);
-  };
+    // 2️⃣ FETCH UPDATED DATA
+    await loadData();
+  } catch (err) {
+    console.error("Delete CR failed:", err);
+    alert("Failed to delete CR");
+  }
+};
 
   /* ---------------- UI ---------------- */
 
