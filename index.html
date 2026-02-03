@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link id="favicon" rel="icon" type="image/png" href="/logo.jpg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>dashboard</title>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const favicon = document.getElementById("favicon");
+        const activeIcon = "/logo.jpg"; 
+        const inactiveIcon = "/logo.png"; 
+
+        window.addEventListener("blur", () => {
+          favicon.href = inactiveIcon;
+          document.title = "Come back!";
+        });
+
+        window.addEventListener("focus", () => {
+          favicon.href = activeIcon;
+          document.title = "dashboard";
+        });
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
