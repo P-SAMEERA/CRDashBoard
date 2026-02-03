@@ -159,13 +159,13 @@ const SystemDetail = () => {
                   onClick={() => openEdit(cr)}
                   className="text-yellow-400"
                 >
-                  Edit
+                  📝Edit
                 </button>
                 <button
                   onClick={() => deleteCR(cr.crId)}
                   className="text-red-400"
                 >
-                  Delete
+                  🗑️Delete
                 </button>
               </td>
             </tr>
