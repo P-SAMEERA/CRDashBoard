@@ -31,7 +31,35 @@ const SYSTEM_COLORS = {
 
 const Dashboard = () => {
   const [cards, setCards] = useState([]);
+  const [statusSummary, setStatusSummary] = useState({});
   const navigate = useNavigate();
+  useEffect(() => {
+  const fetchStatusSummary = async () => {
+    try {
+      const res = await fetch("/api/getCrs");
+      if (!res.ok) throw new Error("API error");
+
+      const data = await res.json();
+
+      const allCRs = Object.values(data.systems || {})
+        .flatMap((s) => s.crs || []);
+
+      const counts = {};
+
+      allCRs.forEach((cr) => {
+        const status = cr.status || "Unknown";
+        counts[status] = (counts[status] || 0) + 1;
+      });
+
+      setStatusSummary(counts);
+    } catch (err) {
+      console.error("Failed to load status summary", err);
+      setStatusSummary({});
+    }
+  };
+
+  fetchStatusSummary();
+}, []);
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -117,6 +145,37 @@ const Dashboard = () => {
           );
         })}
       </div>
+      {/* Status Summary Table */}
+<div className="max-w-4xl mx-auto mt-6 bg-[#1F1F1F] rounded-xl shadow-lg overflow-hidden">
+  <table className="w-full text-sm">
+    <thead className="bg-[#2A2A2A]">
+      <tr className="text-gray-300">
+        <th className="p-3 text-left">Status</th>
+        <th className="p-3 text-right">Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      {Object.entries(statusSummary).map(([status, count]) => (
+        <tr
+          key={status}
+          className="border-t border-gray-700 hover:bg-[#2B2B2B]"
+        >
+          <td className="p-3">{status}</td>
+          <td className="p-3 text-right font-semibold">{count}</td>
+        </tr>
+      ))}
+
+      {Object.keys(statusSummary).length === 0 && (
+        <tr>
+          <td colSpan="2" className="p-4 text-center text-gray-400">
+            No status data available
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+</div>
+
     </div>
   );
 };
