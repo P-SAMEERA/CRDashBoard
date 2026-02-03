@@ -50,8 +50,9 @@ const Dashboard = () => {
         if (!res.ok) throw new Error("API error");
 
         const data = await res.json();
-        const allCRs = Object.values(data.systems || {})
-          .flatMap((s) => s.crs || []);
+        const allCRs = Object.values(data.systems || {}).flatMap(
+          (s) => s.crs || []
+        );
 
         const counts = {};
         allCRs.forEach((cr) => {
@@ -115,105 +116,105 @@ const Dashboard = () => {
   const totalCard = cards.find((c) => c.label === "TKAP");
 
   return (
-    <div className="flex flex-col w-screen min-h-screen bg-[#2E2E2E]">
+    <div className="min-h-screen w-screen bg-[#2E2E2E] overflow-hidden flex flex-col">
 
       {/* Header */}
-      <div className="flex w-full h-14 bg-blue-600 justify-center items-center shadow-md">
+      <div className="flex h-14 bg-blue-600 justify-center items-center shadow-md shrink-0">
         <h1 className="text-white text-xl font-bold">
           R-Systems Change Request Dashboard
         </h1>
       </div>
 
-      {/* TOTAL CRs */}
-      <div className="max-w-6xl mx-auto mt-6 px-4">
-        <div
-          className="flex items-center justify-between px-6 py-4 rounded-xl
-                     bg-black border-2 border-yellow-400 shadow-xl"
-          style={{ boxShadow: "0 0 18px rgba(250,204,21,0.6)" }}
-        >
-          <p className="text-lg font-semibold text-yellow-300 tracking-wide">
-            TOTAL CHANGE REQUESTS
-          </p>
-          <p className="text-4xl font-bold text-yellow-400">
-            {totalCard?.value ?? 0}
-          </p>
-        </div>
-      </div>
+      {/* CONTENT */}
+      <div className="flex-1 overflow-hidden">
 
-      {/* STATUS TABLE */}
-      <div className="max-w-6xl mx-auto mt-8 rounded-xl shadow-xl
-                      bg-[#1F1F1F] border border-gray-700">
-
-        <div className="px-5 py-3 border-b border-gray-700">
-          <h2 className="text-sm font-semibold tracking-wider text-white uppercase">
-            CR Status Overview · All Systems
-          </h2>
+        {/* TOTAL CRs */}
+        <div className="max-w-6xl mx-auto mt-5 px-4">
+          <div
+            className="flex items-center justify-between px-6 py-4 rounded-xl
+                       bg-black border-2 border-yellow-400"
+            style={{ boxShadow: "0 0 18px rgba(250,204,21,0.6)" }}
+          >
+            <p className="text-sm font-semibold text-yellow-300 tracking-widest">
+              TOTAL CHANGE REQUESTS
+            </p>
+            <p className="text-4xl font-bold text-yellow-400">
+              {totalCard?.value ?? 0}
+            </p>
+          </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm table-fixed text-center">
-            <thead className="bg-[#2A2A2A]">
-              <tr>
-                <th className="p-4 text-left text-white w-32">Status</th>
-                {STATUS_ORDER.map((status) => (
-                  <th key={status} className="p-4 text-white font-medium">
-                    {status}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-t border-gray-700">
-                <td className="p-4 text-left text-white font-semibold">Count</td>
-                {STATUS_ORDER.map((status) => (
-                  <td key={status} className="p-4">
-                    <span
-                      className="inline-block min-w-[56px] px-4 py-2 rounded-lg
-                                 text-white text-lg font-bold bg-[#111827]"
-                      style={{ boxShadow: "0 0 14px rgba(59,130,246,0.55)" }}
-                    >
-                      {statusSummary[status] || 0}
-                    </span>
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
+        {/* STATUS TABLE */}
+        <div className="max-w-6xl mx-auto mt-6 px-4">
+          <div className="bg-[#1F1F1F] rounded-xl border border-gray-700 overflow-hidden">
+            <div className="px-5 py-3 border-b border-gray-700">
+              <h2 className="text-xs font-semibold tracking-widest text-white uppercase">
+                CR Status Overview · All Systems
+              </h2>
+            </div>
+
+            <table className="w-full table-fixed text-sm text-center">
+              <thead className="bg-[#2A2A2A]">
+                <tr>
+                  <th className="p-3 text-left text-white w-32">Status</th>
+                  {STATUS_ORDER.map((status) => (
+                    <th key={status} className="p-3 text-white font-medium">
+                      {status}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-gray-700">
+                  <td className="p-3 text-left text-white font-semibold">Count</td>
+                  {STATUS_ORDER.map((status) => (
+                    <td key={status} className="p-3">
+                      <span
+                        className="inline-flex items-center justify-center
+                                   w-12 h-10 rounded-lg text-white font-bold
+                                   bg-[#0B1220]"
+                        style={{ boxShadow: "0 0 12px rgba(59,130,246,0.55)" }}
+                      >
+                        {statusSummary[status] || 0}
+                      </span>
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
 
-      {/* SYSTEM CARDS */}
-      <div className="grid gap-4
-                      grid-cols-2
-                      sm:grid-cols-3
-                      md:grid-cols-4
-                      max-w-6xl mx-auto p-4 mt-8">
+        {/* SYSTEM CARDS */}
+        <div className="max-w-6xl mx-auto mt-6 px-4">
+          <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4">
+            {cards
+              .filter((c) => c.label !== "TKAP")
+              .map((card) => {
+                const color = SYSTEM_COLORS[card.label] || SYSTEM_COLORS.OTHERS;
 
-        {cards
-          .filter((c) => c.label !== "TKAP")
-          .map((card) => {
-            const color = SYSTEM_COLORS[card.label] || SYSTEM_COLORS.OTHERS;
+                return (
+                  <div
+                    key={card.label}
+                    onClick={() => card.clickable && handleCardClick(card.label)}
+                    className={`aspect-square flex flex-col items-center justify-center
+                                rounded-xl border-2 shadow-md
+                                transition hover:scale-105 cursor-pointer
+                                ${color.bg} ${color.border}`}
+                    style={{ boxShadow: "0 0 12px rgba(59,130,246,0.45)" }}
+                  >
+                    <p className={`text-xs font-semibold tracking-wider ${color.text}`}>
+                      {card.label === "OTHERS" ? "FINANCE" : card.label}
+                    </p>
+                    <p className={`text-2xl font-bold ${color.text}`}>
+                      {card.value}
+                    </p>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
 
-            return (
-              <div
-                key={card.label}
-                onClick={() => card.clickable && handleCardClick(card.label)}
-                className={`flex flex-col items-center justify-center
-                            aspect-square rounded-xl border-2 shadow-lg
-                            transition-transform duration-300 ease-in-out
-                            hover:scale-105 hover:cursor-pointer
-                            ${color.bg} ${color.border}`}
-                style={{ boxShadow: "0 0 14px rgba(59,130,246,0.45)" }}
-              >
-                <p className={`text-xs font-semibold uppercase tracking-wider ${color.text}`}>
-                  {card.label === "OTHERS" ? "FINANCE" : card.label}
-                </p>
-                <p className={`text-3xl font-bold mt-1 ${color.text}`}>
-                  {card.value}
-                </p>
-              </div>
-            );
-          })}
       </div>
     </div>
   );
